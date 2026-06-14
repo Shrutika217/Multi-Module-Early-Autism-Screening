@@ -10,7 +10,7 @@ pinned: false
 
 # Early Autism Detection
 
-A multimodal autism screening system that combines:
+A multi-module autism screening system that combines:
 
 - Eye-Gaze Analysis
 - Facial Feature Analysis
