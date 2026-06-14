@@ -1,0 +1,285 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Autism Screening - Questionnaire</title>
+
+<style>
+
+/* ================= GLOBAL ================= */
+body {
+    margin: 0;
+    background: #0f172a;
+    color: white;
+    font-family: Arial;
+}
+
+/* MAIN WRAPPER */
+#form {
+    width: 100%;
+    max-width: 750px;
+    margin: auto;
+    padding-top: 40px;
+}
+
+/* ================= DEMOGRAPHICS ================= */
+
+#demographics {
+    height: 90vh;
+    display: flex;
+    margin: auto;
+    flex-direction: column;
+    justify-content: space-between;
+}
+
+h2 {
+    text-align: center;
+}
+
+/* INPUTS */
+input, select {
+    width: 100%;
+    height: 55px;
+    padding: 0 15px;
+    margin: 10px 0;
+
+    border-radius: 12px;
+    border: none;
+    font-size: 16px;
+
+    box-sizing: border-box;
+}
+
+/* Disable selecting placeholder */
+input::placeholder {
+    user-select: none;
+}
+
+/* BUTTON */
+button {
+    width: 100%;
+    height: 60px;
+    margin-top: 20px;
+
+    border: none;
+    border-radius: 12px;
+
+    font-size: 18px;
+    font-weight: bold;
+
+    background: #38bdf8;
+    color: black;
+    cursor: pointer;
+}
+
+/* Push button to bottom */
+.button-container {
+    margin-top: auto;
+}
+
+.restart-btn {
+    background: #ef4444;   /* red */
+    color: white;
+    margin-top: 15px;
+}
+
+button {
+    transition: all 0.2s ease;
+}
+
+button:hover {
+    transform: translateY(-3px);
+    filter: brightness(1.1);
+}
+
+button:active {
+    transform: translateY(1px);
+}
+
+.likert button:hover {
+    transform: translateY(-4px) scale(1.05);
+}
+
+/* ================= QUESTIONS ================= */
+
+#questions-section {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+}
+
+/* CARD */
+#card {
+    background: #1e293b;
+    width: 100%;
+    max-width: 750px;
+    padding: 40px;
+    border-radius: 15px;
+    text-align: center;
+
+    position: relative;
+    overflow: hidden;
+}
+
+/* ================= ANIMATION ================= */
+
+.slide-in-right {
+    animation: slideInRight 0.3s ease;
+}
+
+.slide-in-left {
+    animation: slideInLeft 0.3s ease;
+}
+
+@keyframes slideInRight {
+    from { transform: translateX(100%); opacity: 0; }
+    to { transform: translateX(0); opacity: 1; }
+}
+
+@keyframes slideInLeft {
+    from { transform: translateX(-100%); opacity: 0; }
+    to { transform: translateX(0); opacity: 1; }
+}
+
+/* ================= LIKERT ================= */
+
+.likert {
+    display: flex;
+    justify-content: space-between;
+    gap: 10px;
+    margin-top: 20px;
+}
+
+.likert button {
+    flex: 1;
+    height: 45px;
+    border-radius: 10px;
+}
+
+/* ACTIVE OPTION */
+.likert button.active {
+    background: #c9e817;
+}
+
+/* ================= NAV BUTTONS ================= */
+
+.nav-buttons {
+    display: flex;
+    gap: 15px;
+    margin-top: 30px;
+}
+
+.prev-btn {
+    background: #64748b;   /* gray */
+    color: white;
+}
+
+.next-btn {
+    background: #0ec438;   /* blue */
+}
+
+/* RESULT */
+#result {
+    text-align: center;
+    margin-top: 20px;
+    font-size: 20px;
+}
+
+</style>
+</head>
+
+<body>
+
+<div id="form">
+
+  <!-- ================= DEMOGRAPHICS ================= -->
+  <div id="demographics">
+
+    <h2>Demographic Details</h2>
+
+    <div>
+      <input type="number" id="age" placeholder="Enter Age" min="1" max="100">
+
+      <select id="gender">
+        <option value="" disabled selected>Select Gender</option>
+        <option value="m">Male</option>
+        <option value="f">Female</option>
+      </select>
+
+      <select id="jaundice">
+        <option value="" disabled selected>History of Jaundice</option>
+        <option value="yes">Yes</option>
+        <option value="no">No</option>
+      </select>
+
+      <select id="family_asd">
+        <option value="" disabled selected>Family History of ASD</option>
+        <option value="yes">Yes</option>
+        <option value="no">No</option>
+      </select>
+
+      <select id="ethnicity">
+        <option value="" disabled selected>Select Ethnicity</option>
+        <option value="white european">White European</option>
+        <option value="asian">Asian</option>
+        <option value="middle eastern">Middle Eastern</option>
+        <option value="south asian">South Asian</option>
+        <option value="black">Black</option>
+        <option value="hispanic">Hispanic</option>
+        <option value="latino">Latino</option>
+        <option value="mixed">Mixed</option>
+        <option value="others">Others</option>
+      </select>
+      
+      <select id="who_completed">
+        <option value="" disabled selected>Who is filling the form?</option>
+        <option value="family member">Family Member</option>
+        <option value="health care professional">Healthcare Professional</option>
+        <option value="self">Self</option>
+        <option value="others">Others</option>
+      </select>
+    </div>
+
+    <div class="button-container">
+      <button onclick="startQuestions()">Next →</button>
+    </div>
+
+  </div>
+
+
+  <!-- ================= QUESTIONS ================= -->
+  <div id="questions-section" style="display:none;">
+
+    <div id="card">
+
+      <h3 id="question"></h3>
+
+      <div class="likert">
+        <button onclick="selectOption('Always', event)">Always</button>
+        <button onclick="selectOption('Usually', event)">Usually</button>
+        <button onclick="selectOption('Sometimes', event)">Sometimes</button>
+        <button onclick="selectOption('Rarely', event)">Rarely</button>
+        <button onclick="selectOption('Never', event)">Never</button>
+      </div>
+
+      <!-- 🔥 UPDATED NAVIGATION -->
+      <div class="nav-buttons">
+        <button class="prev-btn" onclick="prevQuestion()">Previous</button>
+        <button class="next-btn" onclick="nextQuestion()">Next</button>
+      </div>
+
+      <button class="restart-btn" onclick="restartForm()">Restart</button>
+
+    </div>
+
+  </div>
+
+</div>
+
+<div id="result"></div>
+
+<script src="ques.js"></script>
+
+</body>
+</html>

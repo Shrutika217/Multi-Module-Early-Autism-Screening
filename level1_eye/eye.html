@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Level 1 - Eye Tracking</title>
+
+    <style>
+        body {
+            margin: 0;
+            overflow: hidden;
+            background: #111;
+            color: white;
+            font-family: Arial;
+        }
+
+        video {
+            position: absolute;
+            top: 10px;
+            left: 10px;
+            width: 220px;
+            border: 2px solid white;
+            z-index: 2;
+        }
+
+        canvas {
+            position: absolute;
+            top: 0;
+            left: 0;
+            z-index: 1;
+        }
+
+        button {
+            position: absolute;
+            top: 10px;
+            right: 10px;
+            z-index: 3;
+            padding: 10px;
+        }
+
+        #result {
+            position: absolute;
+            bottom: 20px;
+            left: 20px;
+            font-size: 18px;
+            z-index: 3;
+        }
+    </style>
+</head>
+
+<body>
+
+<video id="video" autoplay playsinline></video>
+<canvas id="gameCanvas"></canvas>
+
+<button onclick="startGame()">Start</button>
+
+<p id="result"></p>
+
+<!-- MediaPipe CDN -->
+<script src="https://cdn.jsdelivr.net/npm/@mediapipe/face_mesh/face_mesh.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/@mediapipe/camera_utils/camera_utils.js"></script>
+
+<script src="eye.js"></script>
+
+</body>
+</html>

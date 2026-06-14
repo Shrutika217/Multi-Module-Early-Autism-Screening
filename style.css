@@ -1,0 +1,78 @@
+/* ==============================
+   GLOBAL STYLING
+============================== */
+body {
+    margin: 0;
+    height: 100vh;
+    background-color: black;
+    color: white;
+    font-family: Arial, sans-serif;
+}
+
+/* ==============================
+   CENTER CONTENT
+============================== */
+.container {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+    text-align: center;
+}
+
+/* ==============================
+   HEADING
+============================== */
+h1 {
+    font-size: 48px;
+    margin-bottom: 40px;
+    letter-spacing: 1px;
+}
+
+/* ==============================
+   BUTTON
+============================== */
+button {
+    padding: 14px 28px;
+    font-size: 20px;
+    border: none;
+    border-radius: 8px;
+    cursor: pointer;
+    background-color: #00c853; /* green */
+    color: white;
+    transition: all 0.3s ease;
+    
+    /* subtle glow */
+    box-shadow: 0 0 10px rgba(0, 200, 83, 0.5);
+}
+
+/* HOVER EFFECT */
+button:hover {
+    transform: scale(1.08);
+    box-shadow: 0 0 20px rgba(0, 255, 100, 0.8);
+}
+
+/* CLICK EFFECT */
+button:active {
+    transform: scale(0.95);
+}
+
+/* ==============================
+   PULSE ANIMATION
+============================== */
+@keyframes pulse {
+    0% {
+        box-shadow: 0 0 10px rgba(0, 200, 83, 0.5);
+    }
+    50% {
+        box-shadow: 0 0 25px rgba(0, 255, 100, 1);
+    }
+    100% {
+        box-shadow: 0 0 10px rgba(0, 200, 83, 0.5);
+    }
+}
+
+button {
+    animation: pulse 2s infinite;
+}

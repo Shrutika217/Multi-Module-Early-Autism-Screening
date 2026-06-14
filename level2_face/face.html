@@ -1,0 +1,82 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Level 2 - Face Detection</title>
+
+    <style>
+        body {
+            margin: 0;
+            background: #111;
+            color: white;
+            font-family: Arial;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+        }
+
+        .container {
+            text-align: center;
+        }
+
+        video, canvas {
+            width: 600px;   
+            max-width: 90vw; 
+            border-radius: 16px;
+            border: 2px solid #00c6ff;
+        }
+
+        button {
+            margin: 10px;
+            padding: 10px 20px;
+            border: none;
+            border-radius: 10px;
+            font-size: 16px;
+            cursor: pointer;
+        }
+
+        .capture { background: #ff4d4d; }
+        .predict { background: #00c6ff; }
+        .retry { background: #888; }
+
+        #result {
+            margin-top: 15px;
+            font-size: 18px;
+        }
+    </style>
+</head>
+
+<body>
+
+<div class="container">
+
+    <p id="instructions" style="
+        font-size: 18px;
+        margin-bottom: 15px;
+        color: #ccc;
+    ">
+        Step 1: Click <b style="color:#ff4d4d;">Capture</b> to freeze the image<br>
+        Step 2: Click <b style="color:#00c6ff;">Predict</b> to get the screening result
+    </p>
+
+    <video id="video" autoplay></video>
+    <canvas id="canvas" style="display:none;"></canvas>
+
+    <br>
+
+    <button class="capture" onclick="capture()">Capture</button>
+    <button class="predict" onclick="predict()">Predict</button>
+    <button class="retry" onclick="retry()">Retry</button>
+
+    <div id="result"></div>
+
+    <button id="nextLevel" style="display:none; background:#22c55e;" onclick="goToLevel3()">
+        Continue to Questionnaire
+    </button>
+
+</div>
+
+<script src="face.js"></script>
+
+</body>
+</html>
