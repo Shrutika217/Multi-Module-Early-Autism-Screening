@@ -13,12 +13,14 @@ import json
 import os
 from pdf_generator import generate_pdf
 from fastapi.responses import FileResponse
-
+from download_models import download_models
 
 from fastapi.middleware.cors import CORSMiddleware
 from llm import generate_report_from_json
 
 app = FastAPI()
+
+download_models()
 
 app.add_middleware(
     CORSMiddleware,
