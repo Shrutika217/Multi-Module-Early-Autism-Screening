@@ -30,7 +30,7 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
-DEVICE = "cuda" if torch.cuda.is_available() else "cpu"
+DEVICE = "cpu"
 
 
 # TEMP STORAGE (for combining all 3 levels)
@@ -50,26 +50,58 @@ def save_temp_json():
 # ==============================
 # LOAD EYE MODEL (LEVEL 1)
 # ==============================
-model = joblib.load("models/rf_eye_model.pkl")
-scaler = joblib.load("models/scaler_eye.pkl")
+eye_model = None
+eye_scaler = None
+
+def get_eye_model():
+    global eye_model, eye_scaler
+
+    if eye_model is None:
+        print("Loading Eye Model...")
+        eye_model = joblib.load("models/rf_eye_model.pkl")
+
+    if eye_scaler is None:
+        print("Loading Eye Scaler...")
+        eye_scaler = joblib.load("models/scaler_eye.pkl")
+
+    return eye_model, eye_scaler
 
 # ==============================
 # LOAD FACE MODEL (LEVEL 2)
 # ==============================
-face_model = torchvision.models.resnet50(weights=None)
+face_model = None
 
-face_model.maxpool = torch.nn.AvgPool2d(kernel_size=3, stride=2, padding=1)
-face_model.fc = torch.nn.Linear(face_model.fc.in_features, 2)
+def get_face_model():
+    global face_model
 
-face_model.load_state_dict(torch.load("models/resnet_face_model.pth", map_location=DEVICE))
-face_model.to(DEVICE)
-face_model.eval()
+    if face_model is None:
 
-face_transform = transforms.Compose([
-    transforms.Resize((224,224)),
-    transforms.ToTensor(),
-    transforms.Normalize([0.485,0.456,0.406],[0.229,0.224,0.225])
-])
+        print("Loading Face Model...")
+
+        face_model = torchvision.models.resnet50(weights=None)
+
+        face_model.maxpool = torch.nn.AvgPool2d(
+            kernel_size=3,
+            stride=2,
+            padding=1
+        )
+
+        face_model.fc = torch.nn.Linear(
+            face_model.fc.in_features,
+            2
+        )
+
+        face_model.load_state_dict(
+            torch.load(
+                "models/resnet_face_model.pth",
+                map_location="cpu"
+            )
+        )
+
+        face_model.to("cpu")
+        face_model.eval()
+
+    return face_model
 
 # ==============================
 # INPUT SCHEMA
@@ -99,6 +131,8 @@ def predict_eye(data: InputData):
         return {"error": f"Expected 6 features, got {len(data.features)}"}
 
     X = np.array(data.features, dtype=float).reshape(1, -1)
+    
+    model, scaler = get_eye_model()
     X = scaler.transform(X)
 
     pred = int(model.predict(X)[0])
@@ -149,6 +183,7 @@ async def predict_face(file: UploadFile = File(...)):
 
     image = face_transform(image).unsqueeze(0).to(DEVICE)
 
+    face_model = get_face_model()
     with torch.no_grad():
         output = face_model(image)
         temperature = 2.0 
@@ -203,8 +238,21 @@ async def predict_face(file: UploadFile = File(...)):
 # ==============================
 # LOAD QUESTIONNAIRE MODEL (LEVEL 3)
 # ==============================
-ques_model = CatBoostClassifier()
-ques_model.load_model("models/catboost_autism_model.cbm")
+ques_model = None
+
+def get_ques_model():
+    global ques_model
+
+    if ques_model is None:
+
+        print("Loading Questionnaire Model...")
+
+        ques_model = CatBoostClassifier()
+        ques_model.load_model(
+            "models/catboost_autism_model.cbm"
+        )
+
+    return ques_model
 
 # ==============================
 # INPUT SCHEMA (LEVEL 3)
@@ -295,6 +343,7 @@ def predict_ques(data: QuesInput):
 
     # SAFE PREDICTION
     try:
+        ques_model = get_ques_model()
         pred = int(ques_model.predict(df_input)[0])
         probs = ques_model.predict_proba(df_input)[0]
     except Exception as e:
