@@ -20,7 +20,15 @@ from llm import generate_report_from_json
 
 app = FastAPI()
 
-download_models()
+models_downloaded = False
+
+def ensure_models():
+    global models_downloaded
+
+    if not models_downloaded:
+        print("Downloading models...")
+        download_models()
+        models_downloaded = True
 
 app.add_middleware(
     CORSMiddleware,
@@ -55,6 +63,7 @@ eye_scaler = None
 
 def get_eye_model():
     global eye_model, eye_scaler
+    ensure_models()
 
     if eye_model is None:
         print("Loading Eye Model...")
@@ -73,7 +82,8 @@ face_model = None
 
 def get_face_model():
     global face_model
-
+    ensure_models()
+    
     if face_model is None:
 
         print("Loading Face Model...")
@@ -103,6 +113,15 @@ def get_face_model():
 
     return face_model
 
+face_transform = transforms.Compose([
+    transforms.Resize((224, 224)),
+    transforms.ToTensor(),
+    transforms.Normalize(
+        [0.485, 0.456, 0.406],
+        [0.229, 0.224, 0.225]
+    )
+])
+
 # ==============================
 # INPUT SCHEMA
 # ==============================
@@ -115,8 +134,8 @@ class InputData(BaseModel):
 # ==============================
 
 @app.get("/")
-def home():
-    return {"message": "Backend is running 🚀"}
+def serve_frontend():
+    return FileResponse("index.html")
 
 # ==============================
 # LEVEL 1: EYE PREDICTION (FIXED)
@@ -184,6 +203,7 @@ async def predict_face(file: UploadFile = File(...)):
     image = face_transform(image).unsqueeze(0).to(DEVICE)
 
     face_model = get_face_model()
+    
     with torch.no_grad():
         output = face_model(image)
         temperature = 2.0 
@@ -242,7 +262,8 @@ ques_model = None
 
 def get_ques_model():
     global ques_model
-
+    
+    ensure_models()
     if ques_model is None:
 
         print("Loading Questionnaire Model...")
